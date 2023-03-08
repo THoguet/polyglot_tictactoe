@@ -69,10 +69,15 @@ jobs:
           packages: valgrind
           version: 1.0
 
+      - name: mkdir
+        run: mkdir c/build -p
+
       - name: get build
         uses: actions/download-artifact@v3
         with:
           name: build
+          path: ${{github.workspace}}/c/build/
 
       - name: mem-check
+        working-directory: ${{github.workspace}}/c/build
         run: ctest -C ${{env.BUILD_TYPE}} -T memcheck -j 10
