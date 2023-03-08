@@ -38,15 +38,20 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: mkdir build
+        working-directory: ${{github.workspace}}/c
+        run: mkdir build
+
       - name: get build
         uses: actions/download-artifact@v3
         with:
           name: build
+          path: ${{github.workspace}}/c/build
 
       - name: Test
         working-directory: ${{github.workspace}}/c/build
         # Execute tests defined by the CMake configuration.
-        run: cd build; ctest -C ${{env.BUILD_TYPE}} -j 10
+        run: ctest -C ${{env.BUILD_TYPE}} -j 10
 
   mem-check:
     needs: tests
@@ -55,15 +60,20 @@ jobs:
       - name: install Valgrind
         run: sudo apt install valgrind
 
+      - name: mkdir build
+        working-directory: ${{github.workspace}}/c
+        run: mkdir build
+
       - name: get build
         uses: actions/download-artifact@v3
         with:
           name: build
+          path: ${{github.workspace}}/c/build
 
       - name: Configure CMake
-        working-directory: ${{github.workspace}}/c
+        working-directory: ${{github.workspace}}/c/build
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-        run: cd build; cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ..
+        run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ..
 
       - name: mem-check
         working-directory: ${{github.workspace}}/c/build
