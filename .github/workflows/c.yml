@@ -38,7 +38,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build
-          path: ${{github.workspace}}/c/build
+          path: |
+            ${{github.workspace}}/c/build/CTestTestfile.cmake
+            ${{github.workspace}}/c/build/DartConfiguration.tcl
+            ${{github.workspace}}/c/build/game*
 
   tests:
     needs: build
@@ -72,5 +75,4 @@ jobs:
           name: build
 
       - name: mem-check
-        working-directory: ${{github.workspace}}/c/build
         run: ctest -C ${{env.BUILD_TYPE}} -T memcheck -j 10
