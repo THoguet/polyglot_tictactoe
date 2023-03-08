@@ -43,6 +43,9 @@ jobs:
         with:
           name: build
 
+      - name: chmod+x
+        run: chmod +x *
+
       - name: Test
         # Execute tests defined by the CMake configuration.
         run: ctest -C ${{env.BUILD_TYPE}} -j 10
