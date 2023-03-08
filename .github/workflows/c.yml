@@ -78,6 +78,10 @@ jobs:
           name: build
           path: ${{github.workspace}}/c/build/
 
+      - name: chmod+x
+        working-directory: ${{github.workspace}}/c/build
+        run: chmod +x *
+
       - name: mem-check
         working-directory: ${{github.workspace}}/c/build
         run: ctest -C ${{env.BUILD_TYPE}} -T memcheck -j 10
