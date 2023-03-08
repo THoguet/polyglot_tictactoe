@@ -17,6 +17,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
+    - name: install Valgrind
+      run: sudo apt install valgrind
+      
     - uses: actions/checkout@v3
 
     - name: Configure CMake
@@ -35,6 +39,6 @@ jobs:
       
     - name: mem-check
       working-directory: ${{github.workspace}}/c/build
-      run: ctest -C ${{env.BUILD_TYPE}}  -T memcheck -j 10
+      run: ctest -C ${{env.BUILD_TYPE}} -T memcheck -j 10
     
 
