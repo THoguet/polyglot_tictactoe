@@ -19,6 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: install Valgrind
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: valgrind
+          version: 1.0
+
       - name: Configure CMake
         working-directory: ${{github.workspace}}/c
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -55,7 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: install Valgrind
-        run: sudo apt install valgrind
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: valgrind
+          version: 1.0
+
       - name: get build
         uses: actions/download-artifact@v3
         with:
