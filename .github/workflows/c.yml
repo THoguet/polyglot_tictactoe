@@ -17,13 +17,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
       - name: install Valgrind
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: valgrind
           version: 1.0
+
+      - uses: actions/checkout@v3
 
       - name: Configure CMake
         working-directory: ${{github.workspace}}/c
@@ -34,53 +34,10 @@ jobs:
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/c/build --config ${{env.BUILD_TYPE}}
 
-      - name: upload build
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: |
-            ${{github.workspace}}/c/build/CTestTestfile.cmake
-            ${{github.workspace}}/c/build/DartConfiguration.tcl
-            ${{github.workspace}}/c/build/game*
-
-  tests:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: get build
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-
-      - name: chmod+x
-        run: chmod +x *
-
       - name: Test
+        working-directory: ${{github.workspace}}/c/build
         # Execute tests defined by the CMake configuration.
         run: ctest -C ${{env.BUILD_TYPE}} -j 10
-
-  mem-check:
-    needs: tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: install Valgrind
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: valgrind
-          version: 1.0
-
-      - name: mkdir
-        run: mkdir c/build -p
-
-      - name: get build
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: ${{github.workspace}}/c/build/
-
-      - name: chmod+x
-        working-directory: ${{github.workspace}}/c/build
-        run: chmod +x *
 
       - name: mem-check
         working-directory: ${{github.workspace}}/c/build
