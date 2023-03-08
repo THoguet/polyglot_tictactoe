@@ -46,7 +46,7 @@ jobs:
       - name: Test
         working-directory: ${{github.workspace}}/c/build
         # Execute tests defined by the CMake configuration.
-        run: ctest -C ${{env.BUILD_TYPE}} -j 10
+        run: cd build; ctest -C ${{env.BUILD_TYPE}} -j 10
 
   mem-check:
     needs: tests
