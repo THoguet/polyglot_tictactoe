@@ -61,8 +61,14 @@ int main(int argc, char** argv) {
 	square next_player = S_CIRCLE;
 	while (o == PLAYING) {
 		printf("\n\nPlayer %s, enter coordinates: ", (next_player == S_CIRCLE) ? "⭕️" : "❌");
-		scanf("%u", &x);
-		scanf("%u", &y);
+		if (scanf("%u", &x) != 1) {
+			printf("Invalid input\n");
+			continue;
+		}
+		if (scanf("%u", &y) != 1) {
+			printf("Invalid input\n");
+			continue;
+		}
 		if (x >= g->width || y >= g->height) {
 			printf("Invalid input\n");
 			continue;
