@@ -5,4 +5,4 @@ A tictactoe in multiple languages with :
 - tests
 - github actions
 - a CLI game
-- a graphical interfaced game
+- a GUI game
