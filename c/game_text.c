@@ -4,33 +4,40 @@
 #include "game_tools.h"
 
 void printGame(game g, outcome o, uint winingLine[]) {
-	for (uint x = 0; x < g->width; x++) {
+	uint nbChar = 4;
+	if (game_width(g) >= 10 || game_height(g) >= 10)
+		nbChar = 6;
+
+	for (uint y = 0; y < g->height; y++) {
 		for (uint x = 0; x < g->width; x++)
-			printf("-----");
+			printf("%*s", nbChar + 1, "-------");
 		printf("-\n");
-		for (uint y = 0; y < g->height; y++) {
+		for (uint x = 0; x < g->width; x++) {
 			printf("|");
 			if (g->board[x][y] == S_BLANK)
 				if (o == PLAYING)
-					printf("%u  %u", x, y);
+					if (game_width(g) < 10 && game_height(g) < 10)
+						printf("%u  %u", x, y);
+					else
+						printf("%2u  %2u", x, y);
 				else
-					printf("    ");
-			else if (g->board[x][y] == S_CIRCLE) {
+					printf("%*s", nbChar, "      ");
+			else if (game_get_square(g, x, y) == S_CIRCLE) {
 				if (o == CIRCLE_WON && isXYInWiningLine(x, y, winingLine, game_get_nb_square_to_win(g)))
-					printf("-⭕️-");
+					printf("%*s⭕️%*s", (nbChar - 1) / 2, "--", (nbChar - 1) / 2, "--");
 				else
-					printf(" ⭕️ ");
-			} else if (g->board[x][y] == S_CROSS) {
+					printf("%*s⭕️%*s", (nbChar - 1) / 2, "  ", (nbChar - 1) / 2, "  ");
+			} else if (game_get_square(g, x, y) == S_CROSS) {
 				if (o == CROSS_WON && isXYInWiningLine(x, y, winingLine, game_get_nb_square_to_win(g)))
-					printf("-❌-");
+					printf("%*s❌%*s", (nbChar - 1) / 2, "--", (nbChar - 1) / 2, "--");
 				else
-					printf(" ❌ ");
+					printf("%*s❌%*s", (nbChar - 1) / 2, "  ", (nbChar - 1) / 2, "  ");
 			}
 		}
 		printf("|\n");
 	}
 	for (uint x = 0; x < g->width; x++)
-		printf("-----");
+		printf("%*s", nbChar + 1, "-------");
 	printf("-\n");
 }
 
@@ -55,26 +62,26 @@ int main(int argc, char** argv) {
 	square next_player = S_CIRCLE;
 	while (o == PLAYING) {
 		printf("\n\nPlayer %s, enter coordinates: ", (next_player == S_CIRCLE) ? "⭕️" : "❌");
-		if (scanf("%u", &x) != 1) {
+		if (scanf(" %u %u", &x, &y) != 2) {
 			printf("Invalid input\n");
-			continue;
-		}
-		if (scanf("%u", &y) != 1) {
-			printf("Invalid input\n");
+			scanf("%*[^\n]");
 			continue;
 		}
 		if (x >= g->width || y >= g->height) {
-			printf("Invalid input\n");
+			printf("Too big\n");
+			scanf("%*[^\n]");
 			continue;
 		}
 		if (game_get_square(g, x, y) != S_BLANK) {
 			printf("Square already played\n");
+			scanf("%*[^\n]");
 			continue;
 		}
 		game_set_square(g, x, y, next_player);
 		o = game_outcome(g, winingLine);
 		printGame(g, o, winingLine);
 		next_player = (next_player == S_CIRCLE) ? S_CROSS : S_CIRCLE;
+		scanf("%*[^\n]");
 	}
 	if (o == CIRCLE_WON)
 		printf("Circle wins 🎉\n");
