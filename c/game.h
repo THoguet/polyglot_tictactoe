@@ -4,7 +4,7 @@
  * @details See @ref index for further details.
  **/
 
-#ifndef GAME_H
+#if !defined(GAME_H)
 #define GAME_H
 
 #include <stdbool.h>
@@ -113,4 +113,4 @@ void game_set_square(game g, uint x, uint y, square s);
  **/
 outcome game_outcome(game g, uint winingLine[]);
 
-#endif
+#endif  // GAME_H

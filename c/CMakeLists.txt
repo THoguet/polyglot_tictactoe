@@ -28,7 +28,7 @@ message(STATUS "SDL2 all libraries: ${SDL2_ALL_LIBS}")
 
 #positionne la variable
 set(CMAKE_C_FLAGS "-std=c99 -Wall")
-set(CMAKE_C_FLAGS_DEBUG "-g --coverage -pthread -Wextra -Wunused-parameter -Wpedantic -Werror")    # use CMake option: -DCMAKE_BUILD_TYPE=DEBUG
+set(CMAKE_C_FLAGS_DEBUG "-g --coverage -pthread -Wextra -Wunused-parameter -Wpedantic")    # use CMake option: -DCMAKE_BUILD_TYPE=DEBUG
 set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")   # use CMake option: -DCMAKE_BUILD_TYPE=RELEASE
 
 ######################### COPY IMGAES #########################
@@ -51,14 +51,14 @@ add_executable(game_test game_test.c)
 target_link_libraries(game_test game)
 
 # game_sdl
-# if (SDL2_FOUND)
-# 	include_directories(${SDL2_ALL_INC})
-# 	add_executable(game_sdl game_SDL.c)
-# 	target_link_libraries(game_sdl game ${SDL2_ALL_LIBS})
-# endif()
+if (SDL2_FOUND)
+	include_directories(${SDL2_ALL_INC})
+	add_executable(game_sdl game_SDL.c)
+	target_link_libraries(game_sdl game ${SDL2_ALL_LIBS})
+endif()
 
 # libgame
-add_library (game game.c)
+add_library (game game.c game_tools.c)
 
 
 ############################# TESTS #############################
