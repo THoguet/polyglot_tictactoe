@@ -28,3 +28,9 @@ mkdir build ; cd build ; cmake .. ; make
 ```bash
 ./game_text [height width nb_square]
 ```
+
+## Graphical Interface
+
+```bash
+./game_sdl [height width nb_square]
+```
