@@ -1,12 +1,14 @@
 # TicTacToe in C
 
 ## Time spent
-- Total : 4 hrs 16 mins 36 secs
-- `game.c` : 1 hr 24 mins 10 secs
-- `game_test.c` : 1 hr 16 mins 48 secs
-- `game_text.c` : 57 mins 59 secs
-- `game.h` : 20 mins 38 secs
-- `CMakeLists.txt` : 10 mins 32 secs
+- Total : 9 hrs 45 mins
+- `game_SDL.c` : 2 hrs 46 mins
+- `game_text.c` : 2 hrs 5 mins
+- `game.c` : 1 hr 24 mins
+- `game_test.c` : 1 hr 16 mins
+- `c.yml` : 1 hr
+- `CMakeLists.txt` : 26 mins
+- `game.h` : 21 mins
 
 ## Dependencies
 
