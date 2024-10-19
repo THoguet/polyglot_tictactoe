@@ -12,10 +12,13 @@ pub mod shapes {
 
     impl Shape for Row {
         fn is_win(&self) -> bool {
-            let last_player = &self.cells[0].status;
+            let last_status = &self.cells[0].status;
+            if *last_status == Cell_status::EMPTY {
+                return false;
+            };
             for c in &self.cells {
                 let status = &c.status;
-                if *last_player != *status {
+                if *last_status != *status {
                     return false;
                 }
             }
