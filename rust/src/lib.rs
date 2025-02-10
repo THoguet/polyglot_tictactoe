@@ -48,6 +48,34 @@ impl Coordinate {
     }
 }
 
+#[test]
+fn coordinate_is_in() {
+    let coo = Coordinate::new(0, 0);
+    assert!(coo.is_in(0, 0));
+    assert!(!coo.is_in(0, 1));
+    assert!(!coo.is_in(1, 0));
+    assert!(!coo.is_in(1, 2));
+}
+
+#[test]
+fn coordinate_getters() {
+    let coo = Coordinate::new(0, 1);
+    assert_eq!(coo.get_x(), 0);
+    assert_ne!(!coo.get_x(), 1);
+    assert_eq!(coo.get_y(), 1);
+    assert_ne!(!coo.get_y(), 2);
+}
+
+#[test]
+fn coordinate_new() {
+    let coo = Coordinate::new(0, 1);
+    assert_eq!(coo.x, 0);
+    assert_eq!(coo.y, 1);
+    let coo = Coordinate::new(5, 1);
+    assert_eq!(coo.x, 5);
+    assert_eq!(coo.y, 1);
+}
+
 pub mod shapes {
 
     use crate::{Coordinate, PlayerSymbol};
@@ -82,7 +110,7 @@ pub mod shapes {
                     return false;
                 }
             }
-            true
+            return true;
         }
     }
 
@@ -94,7 +122,7 @@ pub mod shapes {
         }
 
         fn play(&mut self, p: PlayerSymbol) -> bool {
-            if self.current_player_symbol != PlayerSymbol::EMPTY {
+            if p == PlayerSymbol::EMPTY || self.current_player_symbol != PlayerSymbol::EMPTY {
                 return false;
             }
             self.current_player_symbol = p;
@@ -203,6 +231,9 @@ pub mod shapes {
         }
 
         pub fn is_tie(&self) -> bool {
+            if self.is_win() {
+                return false;
+            }
             for cell in &self.cells {
                 for c in cell {
                     if c.current_player_symbol == PlayerSymbol::EMPTY {
@@ -216,5 +247,136 @@ pub mod shapes {
 
     pub trait Draw {
         fn draw(&self);
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn row_is_win() {
+            let mut grid = Grid::new();
+            assert!(!grid.rows[0].is_win(&grid));
+            grid.play(Coordinate::new(0, 0), PlayerSymbol::X);
+            assert!(!grid.rows[0].is_win(&grid));
+            grid.play(Coordinate::new(0, 1), PlayerSymbol::X);
+            assert!(!grid.rows[0].is_win(&grid));
+            grid.play(Coordinate::new(0, 2), PlayerSymbol::X);
+            assert!(grid.rows[0].is_win(&grid));
+        }
+
+        #[test]
+        fn cell_new() {
+            let cell = Cell::new();
+            assert_eq!(cell.current_player_symbol, PlayerSymbol::EMPTY);
+        }
+
+        #[test]
+        fn cell_play() {
+            let mut cell = Cell::new();
+            assert!(!cell.play(PlayerSymbol::EMPTY));
+            assert!(cell.play(PlayerSymbol::X));
+            assert_eq!(cell.current_player_symbol, PlayerSymbol::X);
+            assert!(!cell.play(PlayerSymbol::X));
+            assert_eq!(cell.current_player_symbol, PlayerSymbol::X);
+            assert!(!cell.play(PlayerSymbol::O));
+            assert_eq!(cell.current_player_symbol, PlayerSymbol::X);
+            assert!(!cell.play(PlayerSymbol::EMPTY));
+            assert_eq!(cell.current_player_symbol, PlayerSymbol::X);
+        }
+
+        #[test]
+        fn grid_play() {
+            let mut grid = Grid::new();
+            assert!(!grid.play(Coordinate::new(0, 0), PlayerSymbol::EMPTY));
+            assert!(grid.play(Coordinate::new(0, 0), PlayerSymbol::X));
+            assert_eq!(grid.cells[0][0].current_player_symbol, PlayerSymbol::X);
+            assert!(!grid.play(Coordinate::new(0, 0), PlayerSymbol::X));
+            assert_eq!(grid.cells[0][0].current_player_symbol, PlayerSymbol::X);
+            assert!(!grid.play(Coordinate::new(0, 0), PlayerSymbol::O));
+            assert_eq!(grid.cells[0][0].current_player_symbol, PlayerSymbol::X);
+            assert!(!grid.play(Coordinate::new(0, 0), PlayerSymbol::EMPTY));
+            assert_eq!(grid.cells[0][0].current_player_symbol, PlayerSymbol::X);
+            assert!(!grid.play(Coordinate::new(9, 9), PlayerSymbol::X))
+        }
+
+        #[test]
+        fn grid_is_win() {
+            let mut grid = Grid::new();
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(0, 0), PlayerSymbol::X);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(0, 1), PlayerSymbol::X);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(0, 2), PlayerSymbol::O);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(1, 0), PlayerSymbol::O);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(2, 0), PlayerSymbol::X);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(1, 1), PlayerSymbol::O);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(2, 2), PlayerSymbol::X);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(1, 2), PlayerSymbol::X);
+            assert!(!grid.is_win());
+            grid.play(Coordinate::new(2, 1), PlayerSymbol::O);
+            assert!(!grid.is_win());
+            grid.cells[1][2] = Cell::new();
+            grid.play(Coordinate::new(1, 2), PlayerSymbol::O);
+            assert!(grid.is_win());
+        }
+
+        #[test]
+        fn grid_is_tie() {
+            let mut grid = Grid::new();
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(0, 0), PlayerSymbol::X);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(0, 1), PlayerSymbol::X);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(0, 2), PlayerSymbol::O);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(1, 0), PlayerSymbol::O);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(2, 0), PlayerSymbol::X);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(1, 1), PlayerSymbol::O);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(2, 2), PlayerSymbol::X);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(1, 2), PlayerSymbol::X);
+            assert!(!grid.is_tie());
+            grid.play(Coordinate::new(2, 1), PlayerSymbol::O);
+            assert!(grid.is_tie());
+            grid.cells[1][2] = Cell::new();
+            grid.play(Coordinate::new(1, 2), PlayerSymbol::O);
+            assert!(!grid.is_tie());
+        }
+
+        #[test]
+        fn grid_next() {
+            let mut grid = Grid::new();
+            assert_eq!(grid.next_player, PlayerSymbol::O);
+            assert_eq!(grid.next(), PlayerSymbol::O);
+            assert_eq!(grid.next(), PlayerSymbol::X);
+            assert_eq!(grid.next(), PlayerSymbol::O);
+            assert_eq!(grid.next(), PlayerSymbol::X);
+        }
+
+        #[test]
+        fn grid_get_cell() -> Result<(), String> {
+            let mut grid = Grid::new();
+            let cell = grid.get_cell(0, 0).unwrap();
+            assert_eq!(cell.current_player_symbol, PlayerSymbol::EMPTY);
+            grid.play(Coordinate::new(0, 0), PlayerSymbol::O);
+            let cell = grid.get_cell(0, 0).unwrap();
+            assert_eq!(cell.current_player_symbol, PlayerSymbol::O);
+            let cell = grid.get_cell(3, 9);
+            match cell {
+                Ok(_) => Err("Should not give a cell as there isn't a cell on 3 9".to_string()),
+                Err(_) => Ok(()),
+            }
+        }
     }
 }
